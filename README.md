@@ -51,8 +51,9 @@ Our platform provides a bridge between food suppliers (like restaurants, superma
 
 Our development process followed a structured lifecycle:
 
-![Architecture](./workflow.png)
-
+<p align="center">
+  <img src="./workflow.png" alt="Architecture Diagram" width="600"/>
+</p>
 
 ### System Architecture
 
