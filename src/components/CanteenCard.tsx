@@ -1,7 +1,7 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Canteen } from "@/types";
-import { UtensilsCrossed } from "lucide-react";
+import { UtensilsCrossed, MoveRight } from "lucide-react";
 
 interface CanteenCardProps {
   canteen: Canteen;
@@ -21,13 +21,7 @@ export const CanteenCard = ({ canteen }: CanteenCardProps) => {
   const remainingPercentage = (canteen.surplus / canteen.originalSurplus) * 100;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className="bg-canteen border-2 border-primary/20 rounded-xl p-4 shadow-md hover:shadow-lg transition-all cursor-grab active:cursor-grabbing"
-    >
+    <div className="bg-canteen border-2 border-primary/20 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -43,7 +37,16 @@ export const CanteenCard = ({ canteen }: CanteenCardProps) => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Surplus</span>
-          <span className="font-bold text-primary text-lg">{canteen.surplus} kg</span>
+          <div
+            ref={setNodeRef}
+            style={style}
+            {...listeners}
+            {...attributes}
+            className="flex items-center gap-2 bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-lg cursor-grab active:cursor-grabbing transition-all hover:scale-105 border-2 border-primary/30"
+          >
+            <span className="font-bold text-primary text-base">{canteen.surplus} units</span>
+            <MoveRight className="h-4 w-4 text-primary" />
+          </div>
         </div>
 
         {canteen.surplus < canteen.originalSurplus && (

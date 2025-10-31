@@ -32,9 +32,9 @@ export const NGOCard = ({ ngo }: NGOCardProps) => {
   return (
     <div
       ref={setNodeRef}
-      className={`bg-ngo border-2 rounded-xl p-4 shadow-md transition-all ${
+      className={`bg-ngo border-2 rounded-xl p-4 shadow-md transition-all duration-300 hover:scale-[1.02] ${
         isOver
-          ? "border-primary shadow-xl scale-105"
+          ? "border-primary shadow-xl scale-105 animate-pulse-glow"
           : "border-blue-500/20"
       }`}
     >
@@ -57,17 +57,17 @@ export const NGOCard = ({ ngo }: NGOCardProps) => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Requirement</span>
-          <span className="font-bold text-info text-lg">{ngo.originalRequirement} kg</span>
+          <span className="font-bold text-info text-lg">{ngo.originalRequirement} units</span>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Fulfilled</span>
-          <span className="font-semibold text-success">{ngo.fulfilled} kg</span>
+          <span className="font-semibold text-success">{ngo.fulfilled} units</span>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Remaining</span>
-          <span className="font-semibold text-accent">{remaining} kg</span>
+          <span className="font-semibold text-accent">{remaining} units</span>
         </div>
 
         {ngo.originalRequirement > 0 && (

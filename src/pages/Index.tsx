@@ -7,7 +7,7 @@ import { NGOCard } from "@/components/NGOCard";
 import { NotificationPanel } from "@/components/NotificationPanel";
 import { SummaryBar } from "@/components/SummaryBar";
 import { Button } from "@/components/ui/button";
-import { Sparkles, RotateCcw } from "lucide-react";
+import { Sparkles, RotateCcw, UtensilsCrossed } from "lucide-react";
 import { fifoDistribute } from "@/utils/fifoAlgorithm";
 import { toast } from "sonner";
 
@@ -118,7 +118,7 @@ const Index = () => {
     };
 
     setNotifications([...notifications, allocation]);
-    toast.success(`Allocated ${amount} kg from ${canteen.name} to ${ngo.name}`);
+    toast.success(`Allocated ${amount} units from ${canteen.name} to ${ngo.name}`);
   };
 
   const handleAutoDistribute = () => {
@@ -164,9 +164,12 @@ const Index = () => {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-primary">
-              Food for All 🍽️
-            </h1>
+            <div className="flex items-center gap-2">
+              <UtensilsCrossed className="h-7 w-7 text-primary" />
+              <h1 className="text-2xl md:text-3xl font-bold text-primary">
+                Food for All
+              </h1>
+            </div>
 
             <DateSelector onFetchData={fetchData} isLoading={isLoading} />
 
@@ -197,8 +200,10 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6">
         {canteens.length === 0 && ngos.length === 0 ? (
           <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">🍽️</div>
+            <div className="text-center space-y-4 animate-fade-in">
+              <div className="flex justify-center">
+                <UtensilsCrossed className="h-16 w-16 text-primary animate-float" />
+              </div>
               <h2 className="text-2xl font-semibold text-foreground">
                 Welcome to Food Distribution Dashboard
               </h2>
@@ -211,28 +216,15 @@ const Index = () => {
         ) : (
           <div className="space-y-6">
             {/* Summary Bar */}
-            <SummaryBar canteens={canteens} ngos={ngos} />
+            <div className="animate-fade-in">
+              <SummaryBar canteens={canteens} ngos={ngos} />
+            </div>
 
             {/* Drag and Drop Area */}
             <DndContext onDragEnd={handleDragEnd} onDragStart={(e) => setActiveId(e.active.id as string)}>
               <div className="grid md:grid-cols-2 gap-6">
-                {/* NGOs Section */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-foreground">NGOs</h2>
-                    <span className="text-sm text-muted-foreground">
-                      {ngos.length} organizations
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    {ngos.map((ngo) => (
-                      <NGOCard key={ngo.name} ngo={ngo} />
-                    ))}
-                  </div>
-                </div>
-
                 {/* Canteens Section */}
-                <div className="space-y-4">
+                <div className="space-y-4 animate-fade-in">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold text-foreground">Canteens</h2>
                     <span className="text-sm text-muted-foreground">
@@ -245,6 +237,21 @@ const Index = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* NGOs Section */}
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-foreground">NGOs</h2>
+                    <span className="text-sm text-muted-foreground">
+                      {ngos.length} organizations
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    {ngos.map((ngo) => (
+                      <NGOCard key={ngo.name} ngo={ngo} />
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <DragOverlay>
@@ -253,9 +260,9 @@ const Index = () => {
             </DndContext>
 
             {/* Instructions */}
-            <div className="bg-muted/50 border border-border rounded-xl p-4 text-sm text-muted-foreground">
+            <div className="bg-muted/50 border border-border rounded-xl p-4 text-sm text-muted-foreground animate-fade-in">
               <p>
-                💡 <strong>Tip:</strong> Drag canteen cards to NGO cards to allocate food, or use
+                <strong>Tip:</strong> Drag the surplus button from canteen cards to NGO cards to allocate food, or use
                 the "Auto Distribute" button for FIFO allocation.
               </p>
             </div>

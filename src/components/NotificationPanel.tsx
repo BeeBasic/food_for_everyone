@@ -37,7 +37,7 @@ export const NotificationPanel = ({ notifications, onClear }: NotificationPanelP
               <p className="text-foreground">
                 <span className="font-semibold text-info">{notification.ngo}</span> has been
                 notified to collect{" "}
-                <span className="font-semibold text-primary">{notification.amount} kg</span> from{" "}
+                <span className="font-semibold text-primary">{notification.amount} units</span> from{" "}
                 <span className="font-semibold text-accent">{notification.canteen}</span>
               </p>
               <p className="text-xs text-muted-foreground mt-1">
