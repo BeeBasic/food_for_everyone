@@ -14,6 +14,7 @@ A hackathon project dedicated to fighting food waste. **Food-For-All** uses mach
 ![Demo Preview](./demo.gif)
 
 🎥 [For Full Website Demo click here](https://drive.google.com/file/d/1tmTa1eS9vo2AHLNgxUVhJS1NKxBp1hZ-/view?usp=sharing)
+
 🎥 [For Full App Demo click here](https://drive.google.com/file/d/1NV_BNTtN8fVDkxhXmP4Qkkekpl9RJ6hw/view?usp=sharing)
 
 ---
