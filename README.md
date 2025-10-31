@@ -45,6 +45,9 @@ Our platform provides a bridge between food suppliers (like restaurants, superma
 
 ## 🏗️ Architecture & Workflow
 
+![Architecture](https://raw.githubusercontent.com/BeeBasic/your-repo-name/main/images/flowchart.png)
+
+
 ### System Architecture
 
 Our architecture is built for scalability and real-time performance. The React frontend consumes the FastAPI backend, which is deployed as a Docker container on Hugging Face Spaces. The ML model endpoint is served directly by the FastAPI application.
