@@ -71,6 +71,7 @@ Our architecture is built for scalability and real-time performance. The React f
 * **FastAPI (Python):** For high-performance, asynchronous API development.
 * **Uvicorn:** As the ASGI server for FastAPI.
 * **Pydantic:** For data validation and settings management.
+* **Firebase:** For User authentication in mobile app.
 
 ### 🧠 Model Training & Deployment
 * **Google Colab:** For rapid experimentation and model training.
@@ -136,7 +137,7 @@ Follow these steps to get the project running on your local machine.
 
 ## 🧑‍💻 Our Team
 
-* **[Idots]**  Team Number 17953
+* **[iDots]**  Team Number 17953
 * **[Aditya Aryan]**
 * **[Divyansh Yadav]**
 
