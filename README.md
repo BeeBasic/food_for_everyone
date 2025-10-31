@@ -45,7 +45,7 @@ Our platform provides a bridge between food suppliers (like restaurants, superma
 
 ## 🏗️ Architecture & Workflow
 
-![Architecture](./flowchart.png)
+![Architecture](./workflow.png)
 
 
 ### System Architecture
