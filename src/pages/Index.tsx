@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
-import { Canteen, NGO, Allocation, ApiResponse } from "@/types";
+import { Canteen, NGO, Allocation } from "@/types";
 import { DateSelector } from "@/components/DateSelector";
 import { CanteenCard } from "@/components/CanteenCard";
 import { NGOCard } from "@/components/NGOCard";
@@ -20,79 +20,116 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
 
+  const API_URL = "https://beebasic-food-for-all-api.hf.space/predict";
+
+  const canteenList = [
+    { id: "C001", name: "VIT University Main Canteen" },
+    { id: "C002", name: "SRM Campus Canteen" },
+    { id: "C003", name: "Anna University Mess" },
+    { id: "C004", name: "IIT Madras Hostel Mess" },
+    { id: "C005", name: "Sangeetha Veg Restaurant" },
+    { id: "C006", name: "Murugan Idli Shop" },
+    { id: "C007", name: "Adyar Ananda Bhavan (A2B)" },
+    { id: "C008", name: "The Marina Café" },
+    { id: "C009", name: "Buhari Hotel Canteen" },
+    { id: "C010", name: "Crescent College Cafeteria" },
+  ];
+
+  // ✅ Fetch predictions for all canteens in parallel
   const fetchData = async (date: Date) => {
     setIsLoading(true);
     setSelectedDate(date);
 
     try {
-      // Format date for API call
-      const formattedDate = date.toISOString().split('T')[0];
-      
-      // API call to fetch data
-      const response = await fetch(`/api/food-distribution?date=${formattedDate}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
+      const formattedDate = date.toISOString().split("T")[0];
+      const dayOfWeek = date.getDay();
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
 
-      const data: ApiResponse = await response.json();
+      const allPredictions = await Promise.all(
+        canteenList.map(async (c) => {
+          const body = {
+            data: [
+              {
+                canteen_id: c.id,
+                canteen_name: c.name,
+                day,
+                month,
+                year,
+                day_of_week: dayOfWeek,
+              },
+            ],
+          };
 
-      // Transform API data
-      const transformedCanteens: Canteen[] = data.canteens.map((c) => ({
-        name: c.name,
-        surplus: c.surplus,
-        originalSurplus: c.surplus,
-      }));
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
 
-      const transformedNGOs: NGO[] = data.ngos.map((n) => ({
-        name: n.name,
-        requirement: n.requirement,
-        originalRequirement: n.requirement,
-        fulfilled: 0,
-      }));
+          if (!res.ok) throw new Error(`Failed for ${c.id}: ${res.status}`);
+          const json = await res.json();
+          return Array.isArray(json) ? json[0] : json;
+        })
+      );
+
+      console.log("API Responses:", allPredictions);
+
+      const transformedCanteens: Canteen[] = allPredictions.map((item) => {
+      const roundedSurplus = Math.round(Number(item.predicted_surplus) || 0);
+      return {
+        name: item.canteen_name || "Unknown Canteen",
+        surplus: roundedSurplus,
+        originalSurplus: roundedSurplus,
+        };
+      });
+
+      const mockNGOs: NGO[] = [
+        { name: "Helping Hands", requirement: 40, originalRequirement: 40, fulfilled: 0 },
+        { name: "Food Angels", requirement: 60, originalRequirement: 60, fulfilled: 0 },
+        { name: "Hunger Relief", requirement: 50, originalRequirement: 50, fulfilled: 0 },
+      ];
 
       setCanteens(transformedCanteens);
-      setNGOs(transformedNGOs);
+      setNGOs(mockNGOs);
       setNotifications([]);
-      
-      toast.success("Data fetched successfully!");
+      toast.success("Fetched latest surplus data successfully!");
     } catch (error) {
       console.error("Error fetching data:", error);
-      
-      // Mock data for demonstration
+      toast.error("API failed — showing fallback demo data");
+
       const mockCanteens: Canteen[] = [
-        { name: "Canteen A", surplus: 50, originalSurplus: 50 },
+        { name: "Canteen A", surplus: 45, originalSurplus: 45 },
         { name: "Canteen B", surplus: 70, originalSurplus: 70 },
-        { name: "Canteen C", surplus: 40, originalSurplus: 40 },
+        { name: "Canteen C", surplus: 30, originalSurplus: 30 },
       ];
 
       const mockNGOs: NGO[] = [
-        { name: "NGO X", requirement: 30, originalRequirement: 30, fulfilled: 0 },
-        { name: "NGO Y", requirement: 40, originalRequirement: 40, fulfilled: 0 },
-        { name: "NGO Z", requirement: 35, originalRequirement: 35, fulfilled: 0 },
+        { name: "NGO Alpha", requirement: 40, originalRequirement: 40, fulfilled: 0 },
+        { name: "NGO Beta", requirement: 35, originalRequirement: 35, fulfilled: 0 },
+        { name: "NGO Gamma", requirement: 50, originalRequirement: 50, fulfilled: 0 },
       ];
 
       setCanteens(mockCanteens);
       setNGOs(mockNGOs);
       setNotifications([]);
-      
-      toast.info("Using demo data (API not available)");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // ✅ Handle drag-and-drop allocation
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveId(null);
-
     if (!over) return;
 
     const canteen = canteens.find((c) => c.name === active.id);
     const ngo = ngos.find((n) => n.name === over.id);
 
     if (!canteen || !ngo || canteen.surplus === 0 || ngo.requirement === 0) {
-      toast.error("Cannot allocate: insufficient surplus or requirement fulfilled");
+      toast.error("Invalid allocation — nothing to distribute");
       return;
     }
 
@@ -122,38 +159,34 @@ const Index = () => {
     toast.success(`Allocated ${amount} units from ${canteen.name} to ${ngo.name}`);
   };
 
+  // ✅ FIFO auto-distribution
   const handleAutoDistribute = () => {
     if (canteens.length === 0 || ngos.length === 0) {
-      toast.error("Please fetch data first");
+      toast.error("Fetch data first before auto-distribution");
       return;
     }
 
     const { updatedCanteens, updatedNGOs, allocations } = fifoDistribute(canteens, ngos);
-
     setCanteens(updatedCanteens);
     setNGOs(updatedNGOs);
     setNotifications([...notifications, ...allocations]);
 
-    toast.success(`Auto-distributed to ${allocations.length} allocations using FIFO`);
+    toast.success(`Auto-distributed ${allocations.length} allocations successfully`);
   };
 
+  // ✅ Reset everything
   const handleReset = () => {
     if (canteens.length > 0 || ngos.length > 0) {
-      const resetCanteens = canteens.map((c) => ({
-        ...c,
-        surplus: c.originalSurplus,
-      }));
-
+      const resetCanteens = canteens.map((c) => ({ ...c, surplus: c.originalSurplus }));
       const resetNGOs = ngos.map((n) => ({
         ...n,
         requirement: n.originalRequirement,
         fulfilled: 0,
       }));
-
       setCanteens(resetCanteens);
       setNGOs(resetNGOs);
       setNotifications([]);
-      toast.success("All allocations cleared");
+      toast.success("Dashboard reset");
     }
   };
 
@@ -161,100 +194,67 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <UtensilsCrossed className="h-7 w-7 text-primary" />
-              <h1 className="text-2xl md:text-3xl font-bold text-primary">
-                Food for All
-              </h1>
-            </div>
+        <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <UtensilsCrossed className="h-7 w-7 text-primary" />
+            <h1 className="text-2xl md:text-3xl font-bold text-primary">Food for All</h1>
+          </div>
 
-            <DateSelector onFetchData={fetchData} isLoading={isLoading} />
+          <DateSelector onFetchData={fetchData} isLoading={isLoading} />
 
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <div className="flex gap-2">
-              <Button
-                onClick={handleAutoDistribute}
-                disabled={canteens.length === 0 || ngos.length === 0}
-                variant="default"
-                className="bg-accent hover:bg-accent/90"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Auto Distribute
-              </Button>
-              <Button
-                onClick={handleReset}
-                disabled={canteens.length === 0 || ngos.length === 0}
-                variant="outline"
-              >
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Reset
-              </Button>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              onClick={handleAutoDistribute}
+              disabled={canteens.length === 0 || ngos.length === 0}
+              className="bg-accent hover:bg-accent/90"
+            >
+              <Sparkles className="h-4 w-4 mr-2" /> Auto Distribute
+            </Button>
+            <Button
+              onClick={handleReset}
+              disabled={canteens.length === 0 && ngos.length === 0}
+              variant="outline"
+            >
+              <RotateCcw className="h-4 w-4 mr-2" /> Reset
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         {canteens.length === 0 && ngos.length === 0 ? (
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center space-y-4 animate-fade-in">
-              <div className="flex justify-center">
-                <UtensilsCrossed className="h-16 w-16 text-primary animate-float" />
-              </div>
-              <h2 className="text-2xl font-semibold text-foreground">
-                Welcome to Food Distribution Dashboard
-              </h2>
-              <p className="text-muted-foreground max-w-md">
-                Select a date and click "Fetch Data" to begin managing food distribution
-                between canteens and NGOs.
+              <UtensilsCrossed className="h-16 w-16 text-primary mx-auto animate-float" />
+              <h2 className="text-2xl font-semibold">Welcome to Food Distribution Dashboard</h2>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Select a date and click “Fetch Data” to begin managing food distribution.
               </p>
             </div>
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Summary Bar */}
-            <div className="animate-fade-in">
-              <SummaryBar canteens={canteens} ngos={ngos} />
-            </div>
+            <SummaryBar canteens={canteens} ngos={ngos} />
 
-            {/* Drag and Drop Area */}
-            <DndContext onDragEnd={handleDragEnd} onDragStart={(e) => setActiveId(e.active.id as string)}>
+            <DndContext
+              onDragEnd={handleDragEnd}
+              onDragStart={(e) => setActiveId(e.active.id as string)}
+            >
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Canteens Section */}
-                <div className="space-y-4 animate-fade-in">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-foreground">Canteens</h2>
-                    <span className="text-sm text-muted-foreground">
-                      {canteens.length} locations
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    {canteens.map((canteen) => (
-                      <CanteenCard key={canteen.name} canteen={canteen} />
-                    ))}
-                  </div>
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold">Canteens</h2>
+                  {canteens.map((canteen) => (
+                    <CanteenCard key={canteen.name} canteen={canteen} />
+                  ))}
                 </div>
 
-                {/* NGOs Section */}
-                <div className="space-y-4 animate-fade-in">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-foreground">NGOs</h2>
-                    <span className="text-sm text-muted-foreground">
-                      {ngos.length} organizations
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    {ngos.map((ngo) => (
-                      <NGOCard key={ngo.name} ngo={ngo} />
-                    ))}
-                  </div>
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold">NGOs</h2>
+                  {ngos.map((ngo) => (
+                    <NGOCard key={ngo.name} ngo={ngo} />
+                  ))}
                 </div>
               </div>
 
@@ -263,18 +263,16 @@ const Index = () => {
               </DragOverlay>
             </DndContext>
 
-            {/* Instructions */}
-            <div className="bg-muted/50 border border-border rounded-xl p-4 text-sm text-muted-foreground animate-fade-in">
+            <div className="bg-muted/50 border border-border rounded-xl p-4 text-sm text-muted-foreground">
               <p>
-                <strong>Tip:</strong> Drag the surplus button from canteen cards to NGO cards to allocate food, or use
-                the "Auto Distribute" button for FIFO allocation.
+                <strong>Tip:</strong> Drag surplus food from canteen cards to NGO cards,
+                or use “Auto Distribute” for FIFO allocation.
               </p>
             </div>
           </div>
         )}
       </main>
 
-      {/* Notifications */}
       <NotificationPanel notifications={notifications} onClear={() => setNotifications([])} />
     </div>
   );
