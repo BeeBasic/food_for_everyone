@@ -45,7 +45,7 @@ Our platform provides a bridge between food suppliers (like restaurants, superma
 
 ## 🏗️ Architecture & Workflow
 
-![Architecture](https://raw.githubusercontent.com/BeeBasic/your-repo-name/main/images/flowchart.png)
+![Architecture](./flowchart.png)
 
 
 ### System Architecture
