@@ -45,6 +45,10 @@ Our platform provides a bridge between food suppliers (like restaurants, superma
 
 ## 🏗️ Architecture & Workflow
 
+### Project Workflow
+
+Our development process followed a structured lifecycle:
+
 ![Architecture](./workflow.png)
 
 
@@ -52,22 +56,6 @@ Our platform provides a bridge between food suppliers (like restaurants, superma
 
 Our architecture is built for scalability and real-time performance. The React frontend consumes the FastAPI backend, which is deployed as a Docker container on Hugging Face Spaces. The ML model endpoint is served directly by the FastAPI application.
 
-
-
-### Project Workflow
-
-Our development process followed a structured 10-step lifecycle:
-
-1.  **Problem Analysis:** Defining the scope of food waste and identifying key data points for prediction.
-2.  **Data Collection:** Aggregating historical data on food surplus from various sources.
-3.  **Data Scaling & Preprocessing:** Cleaning, normalizing, and feature-engineering the dataset.
-4.  **Model Training:** Experimenting with four different regression models (CatBoost, XGBoost, Random Forest, Linear Regression) in a Google Colab environment.
-5.  **Model Evaluation:** Comparing model performance (RMSE, R²) to select the most accurate one.
-6.  **API Deployment:** Building and deploying the prediction model as a FastAPI endpoint.
-7.  **Frontend Integration:** Connecting the React UI (specifically `Index.tsx`) to the backend API using Axios.
-8.  **Containerization:** Creating a Dockerfile for the FastAPI application.
-9.  **Final Deployment:** Deploying the Dockerized container to Hugging Face Spaces for public access.
-10. **Testing:** End-to-end testing of the data flow and user interaction.
 
 ## 🛠️ Tech Stack
 
