@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, RotateCcw, UtensilsCrossed } from "lucide-react";
 import { fifoDistribute } from "@/utils/fifoAlgorithm";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const [canteens, setCanteens] = useState<Canteen[]>([]);
@@ -173,7 +174,9 @@ const Index = () => {
 
             <DateSelector onFetchData={fetchData} isLoading={isLoading} />
 
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <div className="flex gap-2">
               <Button
                 onClick={handleAutoDistribute}
                 disabled={canteens.length === 0 || ngos.length === 0}
@@ -191,6 +194,7 @@ const Index = () => {
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Reset
               </Button>
+              </div>
             </div>
           </div>
         </div>
