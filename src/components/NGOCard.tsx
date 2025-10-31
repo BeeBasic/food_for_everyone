@@ -12,8 +12,12 @@ export const NGOCard = ({ ngo }: NGOCardProps) => {
     data: { ngo },
   });
 
-  const fulfillmentPercentage = (ngo.fulfilled / ngo.originalRequirement) * 100;
+  const fulfillmentPercentage =
+    ngo.originalRequirement > 0
+      ? ((ngo.originalRequirement - ngo.requirement) / ngo.originalRequirement) * 100
+      : 0;
   const remaining = ngo.requirement;
+  const fulfilled = ngo.originalRequirement - remaining;
 
   let statusColor = "unfulfilled";
   let StatusIcon = AlertCircle;
@@ -62,7 +66,7 @@ export const NGOCard = ({ ngo }: NGOCardProps) => {
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Fulfilled</span>
-          <span className="font-semibold text-success">{ngo.fulfilled} units</span>
+          <span className="font-semibold text-success">{fulfilled} units</span>
         </div>
 
         <div className="flex items-center justify-between">

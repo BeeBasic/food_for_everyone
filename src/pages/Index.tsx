@@ -86,9 +86,11 @@ const Index = () => {
       });
 
       const mockNGOs: NGO[] = [
-        { name: "Helping Hands", requirement: 40, originalRequirement: 40, fulfilled: 0 },
-        { name: "Food Angels", requirement: 60, originalRequirement: 60, fulfilled: 0 },
-        { name: "Hunger Relief", requirement: 50, originalRequirement: 50, fulfilled: 0 },
+        { name: "All the Children", requirement: 40, originalRequirement: 40, fulfilled: 0 },
+        { name: "Aroma Foundation", requirement: 60, originalRequirement: 60, fulfilled: 0 },
+        { name: "Indian WellFare Foundation", requirement: 50, originalRequirement: 50, fulfilled: 0 },
+        { name: "Eco Society India", requirement: 35, originalRequirement: 35, fulfilled: 0 },
+        { name: "S O S Childrens Village of India", requirement: 45, originalRequirement: 45, fulfilled: 0 },
       ];
 
       setCanteens(transformedCanteens);
@@ -106,9 +108,11 @@ const Index = () => {
       ];
 
       const mockNGOs: NGO[] = [
-        { name: "NGO Alpha", requirement: 40, originalRequirement: 40, fulfilled: 0 },
-        { name: "NGO Beta", requirement: 35, originalRequirement: 35, fulfilled: 0 },
-        { name: "NGO Gamma", requirement: 50, originalRequirement: 50, fulfilled: 0 },
+        { name: "All the Children", requirement: 40, originalRequirement: 40, fulfilled: 0 },
+        { name: "Aroma Foundation", requirement: 60, originalRequirement: 60, fulfilled: 0 },
+        { name: "Indian WellFare Foundation", requirement: 50, originalRequirement: 50, fulfilled: 0 },
+        { name: "Eco Society India", requirement: 35, originalRequirement: 35, fulfilled: 0 },
+        { name: "S O S Childrens Village of India", requirement: 45, originalRequirement: 45, fulfilled: 0 },
       ];
 
       setCanteens(mockCanteens);
